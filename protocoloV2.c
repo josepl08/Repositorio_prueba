@@ -49,12 +49,17 @@
 #define COMM_ANTITRDLMBRG_UP 				0x27
 #define COMM_ANTITRDLMBRG_DOWN				0x28
 #define COMM_TRDLMBRG_LEVEL0				0x29
+// Definiciones asociadas al estado en que se encuentra la solicitud de reporte
+#define REP_IDLE							0x00
+#define REP_START							0x01
+#define REP_IN_PROGRESS						0x02
 
 //	VARIABLES GLOBALES 
 byte string_ACK = 0;						// Variable donde se guarda valor de ACK para envío/recepción de tramas
 byte RX_buffer[64], TX_buffer[64];			// Variables buffer para almacenar caracteres 
 byte RX_cont = 0, RX_string_strt, RX_size;	// Variable para contador de buff Rx, inicio de trama y tamaño de trama
 byte weight_stat;							// Variable para guardar estado de la medicion de peso.
+bye  report_stat;							// Variable para guardar estado de reporte 
 //=======================================METODOS==========================================================
 void protocolo_ACKset(bool en){
 	string_ACK = (byte)en;
@@ -313,24 +318,60 @@ void protocolo_UISendAlarm(byte alarm, byte en){
 	protocolo_UISendString(&TX_buffer[0], 6);
 }
 // Envio de parametro de Referencia
-/*	===================void protocolo_UISendAlarm( byte alarm)=============================
-	- byte alarm 	comando asociado a alarma que se enviará a subsistema UI.
-	- byte en 		habilitar/deshabilitar alarma.
-	Método para enviar alarma al subsistema UI para su posterior almacenamiento y visualización.
-	Las tramas para el envío de comando se enviarín con el siguiente formato: |In|Comm|En|CRC|Fin|
-		+ In: 	Inicio de trama (0x03h)
-		+ Comm:	Comando asociado a un tipo de alarma
-		+ En:	0x01h para habilitar alarma y 0x00h para deshabilitar alarma
-		+ CRC:	Chequeo de redundancia cíclica (2 bits)
-		+ Fin:	Dinal de trama (0x02h)
-===========================================================================================
-*/
 void protocolo_UIControlRef(){
 	
 }
 // Manejo de trendelemburg
+void protocolo_ReportStatSet(byte reportStatVal){
+ 	report_stat = reportStatVal;
+}
 
+byte protocolo_ReportStatGet(){
+	return = report_stat;
+}
 // Reporte de Tendencias
-
+void protocolo_UITrendReport_Request(){
+	if (report_stat == REP_START){
+		// agregar métodos para deshabilitar funciones de incubadora
+		report_stat = REP_IN_PROGRESS;
+	}
+	if (report_stat == REP_IN_PROGRESS){
+		// se ingresa a este método cuando se envian tramas por UART. 
+		//enviar trama de todos los datos desde #medicion hasta ID paciente
+			// para parar de enviar los datos se deberá cambiar report_stat desde el método que recibe tramas de UI
+		// 
+	}
+	if (report_stat == REP_IDLE){
+		// agregar metodos para habilitar funciones de incubadora.
+	}
+}
 
 // Reporte de Alarmas
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
