@@ -154,9 +154,9 @@ void protocolo_UICharReceived(){
 		}
 		(void)protocolo_UIReceiveString(&RX_buffer[RX_string_strt], RX_size);
 	}
-	RX_cont = (RX_cont + 1) & 0x3F;
+	RX_cont = (RX_cont + 1) & 0x3F; // Se asume un buffer para caracteres de entrada de 64 elementos
 }
-/*	===============byte 	protocolo_UICharReceived(byte *string, 	byte size)=============
+/*	===============byte 	protocolo_UIReceiveString(byte *string, 	byte size)=============
 	- Sin argumentos
 	Método para procesamiento de trama recibida, en este método se realiza la comprobación de CRC, 
 	si se comprueba el CRC, se envía comando ACK hacia UI y se procesa los datos obtenidos según el
@@ -183,14 +183,27 @@ byte protocolo_UIReceiveString(byte *string, byte size){
 			case COMM_CONTROL_OXY:
 
 			break;
+			case COMM_SCALE_INIT:
+				protocolo_ScaleStatSet(COMM_SCALE_INIT);
+				protocolo_ScaleMeasurement();
+			break;
+			case COMM_SCALE_CONFIRM1:
+				protocolo_ScaleStatSet(COMM_SCALE_CONFIRM1);
+				protocolo_ScaleMeasurement();
+			break;
+			case COMM_SCALE_CONFIRM2:
+				protocolo_ScaleStatSet(COMM_SCALE_CONFIRM2);
+				protocolo_ScaleMeasurement();
+			break;
 			case COMM_REPORT_TREND:
-
+				protocolo_UITrendReport_Request();
 			break;
 			case COMM_REPORT_ALARM:
 			
 			break;
 			case COMM_REPORT_STOP:
-
+				protocolo_ReportStatGet(REP_IDLE);
+				protocolo_UITrendReport_Request();
 			break;
 			case COMM_TRDLMBRG_UP:
 
@@ -271,19 +284,16 @@ byte protocolo_ScaleStatGet(){
 	peso en que se encuentren.
 ===========================================================================================
 */
-void scale_measurement(){
+void protocolo_ScaleMeasurement(){
 	switch(weight_stat){
 		case COMM_SCALE_INIT:
 			// hacer cosas
-			weight_stat++;
 		break;
 		case COMM_SCALE_CONFIRM1:
 			// hacer cosas
-			weight_stat++;
 		break;
 		case COMM_SCALE_CONFIRM2:
 			// hacer cosas
-			weight_stat++;
 		break;
 		case COMM_SCALE_SEND_PATIENT_W:
 			// hacer cosas
@@ -347,13 +357,6 @@ void protocolo_UITrendReport_Request(){
 }
 
 // Reporte de Alarmas
-
-
-
-
-
-
-
 
 
 
