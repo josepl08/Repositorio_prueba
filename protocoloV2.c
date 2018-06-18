@@ -49,17 +49,20 @@
 #define COMM_ANTITRDLMBRG_UP 				0x27
 #define COMM_ANTITRDLMBRG_DOWN				0x28
 #define COMM_TRDLMBRG_LEVEL0				0x29
-// Definiciones asociadas al estado en que se encuentra la solicitud de reporte
+// Definiciones asociadas al estado en que se encuentra la solicitud de reporte de tendencias
 #define REP_IDLE							0x00
-#define REP_START							0x01
-#define REP_IN_PROGRESS						0x02
-
+#define REP_START							0x02
+#define REP_IN_PROGRESS						0x04
+// Definiciones asociadas al estado en que se encuentra la solicitud de reporte de alarmas
+#define ALRM_IDLE 							0x00
+#define ALRM_START 							0x02
+#define ALRM_IN_PROGRESS					0x04
 //	VARIABLES GLOBALES 
 byte string_ACK = 0;						// Variable donde se guarda valor de ACK para envío/recepción de tramas
 byte RX_buffer[64], TX_buffer[64];			// Variables buffer para almacenar caracteres 
 byte RX_cont = 0, RX_string_strt, RX_size;	// Variable para contador de buff Rx, inicio de trama y tamaño de trama
 byte weight_stat;							// Variable para guardar estado de la medicion de peso.
-bye  report_stat;							// Variable para guardar estado de reporte 
+bye  report_trend_stat, report_alarm_stat;	// Variables para resguardo de estado de reporte y alarmas
 //=======================================METODOS==========================================================
 void protocolo_ACKset(bool en){
 	string_ACK = (byte)en;
@@ -199,11 +202,12 @@ byte protocolo_UIReceiveString(byte *string, byte size){
 				protocolo_UITrendReport_Request();
 			break;
 			case COMM_REPORT_ALARM:
-			
+				protocolo_UIAlarmReportRequest();
 			break;
 			case COMM_REPORT_STOP:
 				protocolo_ReportStatGet(REP_IDLE);
 				protocolo_UITrendReport_Request();
+				protolo_UI
 			break;
 			case COMM_TRDLMBRG_UP:
 
@@ -333,48 +337,70 @@ void protocolo_UIControlRef(){
 }
 // Manejo de trendelemburg
 void protocolo_ReportStatSet(byte reportStatVal){
- 	report_stat = reportStatVal;
+ 	report_trend_stat = reportStatVal;
 }
 
 byte protocolo_ReportStatGet(){
-	return = report_stat;
+	return = report_trend_stat;
 }
 // Reporte de Tendencias
 void protocolo_UITrendReport_Request(){
-	if (report_stat == REP_START){
+	if (report_trend_stat == REP_START){
 		// agregar métodos para deshabilitar funciones de incubadora
-		report_stat = REP_IN_PROGRESS;
+		report_trend_stat= REP_IN_PROGRESS;
 	}
-	if (report_stat == REP_IN_PROGRESS){
+	if (report_trend_stat == REP_IN_PROGRESS){
 		// se ingresa a este método cuando se envian tramas por UART. 
-		//enviar trama de todos los datos desde #medicion hasta ID paciente
-			// para parar de enviar los datos se deberá cambiar report_stat desde el método que recibe tramas de UI
+		// enviar trama de todos los datos desde #medicion hasta ID paciente
+		// 	para parar de enviar los datos se deberá cambiar report_trend_stat desde el método que recibe tramas de UI
 		// 
 	}
-	if (report_stat == REP_IDLE){
+	if (report_trend_stat == REP_IDLE){
 		// agregar metodos para habilitar funciones de incubadora.
 	}
 }
 
+void protocolo_AlarmStatSet(byte reportAlarmVal){
+	report_alarm_stat = reportAlarmVal;
+}
+byte protocolo_AlarmStatGet(){
+	return report_alarm_stat;
+}
 // Reporte de Alarmas
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void protocolo_UIAlarmReportRequest(){
+	if (report_alarm_stat == ALRM_START){
+		// agregar métodos para deshabilitar funciones de incubadora.
+		report_alarm_stat =  ALRM_IN_PROGRESS;
+	}
+	if (report_alarm_stat == ALRM_IN_PROGRESS){
+		byte i,j,k;
+		byte ala_cont = 0;
+		byte ala_stat;
+		// se ingresa a este método cuando se envian tramas por UART. 
+		// enviar trama de todos los datos desde #medicion hasta hora
+		// procesar los bytes de alarmas para enviar los byte correspondientes
+		for (i=0; i<6;i++){
+			for (j=0; j<4; j++){
+				if (){
+					ala_stat = (RX_buffer[19 + i] >> (2*j)) & 0x03;
+					switch (ala_stat){
+						case 0:
+							// Método en caso de que alarma se reporte inhabilitada
+						break;
+						case 1;
+							// Método para enviar alarma
+						break;
+						case 2:
+						case 3:
+							// Error 
+						break;
+					}
+					ala_cont++;	// Contador para asociarse con los comandos de alarmas e
+								// identificar la alarma habilitada/deshabilitada 
+				}
+			}
+		}
+		// 	para parar de enviar los datos se deberá cambiar report_trend_stat desde el método que recibe tramas de UI
+		// 
+	}
+}
