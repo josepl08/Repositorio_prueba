@@ -381,18 +381,18 @@ void protocolo_UIAlarmReportRequest(){
 		// procesar los bytes de alarmas para enviar los byte correspondientes
 		for (i=0; i<6;i++){
 			for (j=0; j<4; j++){
-				if (){
+				if (ala_cont < 21){
 					ala_stat = (RX_buffer[19 + i] >> (2*j)) & 0x03;
 					switch (ala_stat){
 						case 0:
 							// Método en caso de que alarma se reporte inhabilitada
 						break;
 						case 1;
-							// Método para enviar alarma
+							// Método para enviar alarma de acuerdo al comando de alarma que corresponde
 						break;
 						case 2:
 						case 3:
-							// Error 
+							// Error.
 						break;
 					}
 					ala_cont++;	// Contador para asociarse con los comandos de alarmas e
